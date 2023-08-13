@@ -1,6 +1,6 @@
 # Drone-app-control
 
-# Pre-Requirements:-
+# Pre-Requirements
 *Python v: 3.11 installed*, <br>
 *pip3 installed*. <br>
 
