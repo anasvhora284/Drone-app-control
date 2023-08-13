@@ -15,17 +15,8 @@ def update_parameters():
         'kp_outerloop': kp_outerloop.get()
         # Add other parameters here
     }
+    print(params)
     response = requests.get(f'http://{quadcopter_ip}/update_parameters', params=params)
-    # Handle response if needed
-
-def arm_quadcopter():
-    # Arm the quadcopter
-    response = requests.get(f'http://{quadcopter_ip}/arm')
-    # Handle response if needed
-
-def disarm_quadcopter():
-    # Disarm the quadcopter
-    response = requests.get(f'http://{quadcopter_ip}/disarm')
     # Handle response if needed
 
 def send_command(direction):
@@ -95,8 +86,6 @@ kd_slider = tk.Scale(sliders_frame, variable=kd, from_=0, to=10, resolution=0.1,
 kp_outerloop_slider = tk.Scale(sliders_frame, variable=kp_outerloop, from_=0, to=10, resolution=0.1, orient=tk.HORIZONTAL)
 
 # Create buttons for arming and disarming
-arm_button = ttk.Button(remaining_frame, text="Arm Quadcopter", command=arm_quadcopter)
-disarm_button = ttk.Button(remaining_frame, text="Disarm Quadcopter", command=disarm_quadcopter)
 update_button = ttk.Button(remaining_frame, text="Update Parameters", command=update_parameters)
 
 # Create arrow buttons for control
@@ -122,8 +111,6 @@ ki_slider.grid(row=2, column=1, padx=10, pady=5)
 kd_slider.grid(row=3, column=1, padx=10, pady=5)
 kp_outerloop_slider.grid(row=4, column=1, padx=10, pady=5)
 
-arm_button.pack(side=tk.LEFT, padx=10)
-disarm_button.pack(side=tk.LEFT, padx=10)
 update_button.pack(side=tk.LEFT, padx=10)
 
 up_button.grid(row=0, column=1, padx=10, pady=5)
