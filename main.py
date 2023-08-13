@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 import requests
 
+# Define the Quadcopter IP address
+quadcopter_ip = "192.168.1.100"  # Replace with your actual IP address
+
 def update_parameters():
     # Update parameters on the quadcopter
     params = {
@@ -12,18 +15,56 @@ def update_parameters():
         'kp_outerloop': kp_outerloop.get()
         # Add other parameters here
     }
-    response = requests.get('http://<quadcopter_ip>/update_parameters', params=params)
+    response = requests.get(f'http://{quadcopter_ip}/update_parameters', params=params)
     # Handle response if needed
 
 def arm_quadcopter():
     # Arm the quadcopter
-    response = requests.get('http://<quadcopter_ip>/arm')
+    response = requests.get(f'http://{quadcopter_ip}/arm')
     # Handle response if needed
 
 def disarm_quadcopter():
     # Disarm the quadcopter
-    response = requests.get('http://<quadcopter_ip>/disarm')
+    response = requests.get(f'http://{quadcopter_ip}/disarm')
     # Handle response if needed
+
+def send_command(direction):
+    # Send control commands based on the given direction
+    if direction == "up":
+        # Send the throttle increase command
+        print("up")
+    elif direction == "down":
+        # Send the throttle decrease command
+        print("down")
+    elif direction == "right":
+        # Send the roll right command
+        print("right")
+    elif direction == "left":
+        # Send the roll left command
+        print("left")
+
+def on_key_press(event):
+    # Map arrow keys to respective directions and send commands
+    key = event.keysym.lower()
+    if key == "up":
+        send_command("up")
+    elif key == "down":
+        send_command("down")
+    elif key == "right":
+        send_command("right")
+    elif key == "left":
+        send_command("left")
+
+def is_connected():
+    # Check if connected to the drone
+    try:
+        response = requests.get(f'http://{quadcopter_ip}/ping')
+        if response.status_code == 200:
+            return True
+        else:
+            return False
+    except requests.ConnectionError:
+        return False
 
 app = tk.Tk()
 app.title("Quadcopter Control")
@@ -99,12 +140,24 @@ remaining_frame.grid(row=1, column=0, columnspan=2)
 connection_status_frame.grid(row=2, column=0, columnspan=2)
 
 # Update connection status text and color
-connected = False  # Set this to your actual connection status
-if connected:
+if is_connected():
     connection_status.set("Connection Status: CONNECTED - MPU found")
     connection_label.configure(foreground='green')
 else:
     connection_status.set("Connection Status: NOT CONNECTED - No MPU found")
     connection_label.configure(foreground='red')
+
+# Bind arrow key events to the key press function
+app.bind("<Up>", on_key_press)
+app.bind("<Down>", on_key_press)
+app.bind("<Right>", on_key_press)
+app.bind("<Left>", on_key_press)
+
+# Update parameters when there is any change
+throttle.trace("w", lambda *args: update_parameters())
+kp.trace("w", lambda *args: update_parameters())
+ki.trace("w", lambda *args: update_parameters())
+kd.trace("w", lambda *args: update_parameters())
+kp_outerloop.trace("w", lambda *args: update_parameters())
 
 app.mainloop()

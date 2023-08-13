@@ -117,6 +117,10 @@ void gyro_signals(void) {
   
 }
 
+void handlePing() {
+  server.send(200, "text/plain", "Pong"); // Respond with "Pong" to indicate successful ping
+}
+
 void handleUz() {
   if (server.hasArg("uz")) {
     uz = server.arg("uz").toInt();
@@ -197,6 +201,7 @@ void setup() {
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 
+  server.on("/ping", HTTP_GET, handlePing); // Handle the ping request
   server.on("/uz", handleUz);
   server.on("/PRatePitch", handlePRatePitch);
   server.on("/IRatePitch", handleIRatePitch);
@@ -222,14 +227,14 @@ void setup() {
   Wire.write(0x00);
   Wire.endTransmission();
   timer = millis();
-   for (RateCalibrationNumber=0;
-         RateCalibrationNumber<2000; // FOR loop to sum the avreage of 2000 Measuremnts
-         RateCalibrationNumber ++) {
-    gyro_signals();
-    RateCalibrationRoll+=RateRoll;
-    RateCalibrationPitch+=RatePitch;
-    RateCalibrationYaw+=RateYaw;
-  delay(1);
+   for (RateCalibrationNumber=0; 
+        RateCalibrationNumber<2000; // FOR loop to sum the avreage of 2000 Measuremnts
+        RateCalibrationNumber ++) {
+          gyro_signals();
+          RateCalibrationRoll+=RateRoll;
+          RateCalibrationPitch+=RatePitch;
+          RateCalibrationYaw+=RateYaw;
+          delay(1);
     }
    
   RateCalibrationRoll/=2000;
@@ -337,7 +342,7 @@ void loop() {
  Serial.print(", ");
  Serial.print("CompAnglePitch = ");
  Serial.print (CompAnglePitch);
- //  Serial.print(LoopTimer);
+ //Serial.print(LoopTimer);
  //Serial.print(", ");
  //Serial.print("w1 = ");
  //Serial.print (w1);
