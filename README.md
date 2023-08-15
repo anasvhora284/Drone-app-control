@@ -7,5 +7,6 @@
 # How to Run 
 
 *Open main.py Directory in terminal* <br>
+*Type:- py -m pip install tkinter* <br>
 *Type python main.py* <br>
 *App will Start* <br>
