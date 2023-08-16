@@ -6,18 +6,36 @@ import requests
 quadcopter_ip = "192.168.1.100"  # Replace with your actual IP address
 
 def update_parameters():
-    # Update parameters on the quadcopter
-    params = {
-        'Throttle': throttle.get(),
-        'kp': kp.get(),
-        'ki': ki.get(),
-        'kd': kd.get(),
-        'kp_outerloop': kp_outerloop.get()
-        # Add other parameters here
-    }
-    print(params)
-    response = requests.get(f'http://{quadcopter_ip}/update_parameters', params=params)
-    # Handle response if needed
+    set_uz(throttle_slider.get())
+    set_PRatePitch(kp_slider.get())
+    set_IRatePitch(ki_slider.get())
+    set_DRatePitch(kd_slider.get())
+    set_p_kp(kp_outerloop.get())
+    # Add more functions to update other parameters
+
+def on_slider_change(event):
+    # Update parameters when any slider is changed
+    update_parameters()
+
+def set_uz(value):
+   uz = int(value)
+   print (requests.post(f"http://{quadcopter_ip}/uz", data={"uz": str(uz)}))
+
+def set_PRatePitch(value):
+   PRatePitch = int(value)
+   requests.post(f"http://{quadcopter_ip}/PRatePitch", data={"PRatePitch": str(PRatePitch)})
+
+def set_IRatePitch(value):
+   IRatePitch = int(value)
+   requests.post(f"http://{quadcopter_ip}/IRatePitch", data={"IRatePitch": str(IRatePitch)})
+
+def set_DRatePitch(value):
+   DRatePitch = int(value)
+   requests.post(f"http://{quadcopter_ip}/DRatePitch", data={"DRatePitch": str(DRatePitch)})
+
+def set_p_kp(value):
+  p_kp = int(value)
+  requests.post(f"http://{quadcopter_ip}/p_kp", data={"p_kp": str(p_kp)})
 
 def send_command(direction):
     # Send control commands based on the given direction
@@ -79,14 +97,11 @@ ki_label = ttk.Label(sliders_frame, text="ki")
 kd_label = ttk.Label(sliders_frame, text="kd")
 kp_outerloop_label = ttk.Label(sliders_frame, text="kp_outerloop")
 
-throttle_slider = tk.Scale(sliders_frame, variable=throttle, from_=0, to=100, orient=tk.HORIZONTAL)
-kp_slider = tk.Scale(sliders_frame, variable=kp, from_=0, to=10, resolution=0.1, orient=tk.HORIZONTAL)
-ki_slider = tk.Scale(sliders_frame, variable=ki, from_=0, to=10, resolution=0.1, orient=tk.HORIZONTAL)
-kd_slider = tk.Scale(sliders_frame, variable=kd, from_=0, to=10, resolution=0.1, orient=tk.HORIZONTAL)
-kp_outerloop_slider = tk.Scale(sliders_frame, variable=kp_outerloop, from_=0, to=10, resolution=0.1, orient=tk.HORIZONTAL)
-
-# Create buttons for arming and disarming
-update_button = ttk.Button(remaining_frame, text="Update Parameters", command=update_parameters)
+throttle_slider = tk.Scale(sliders_frame, variable=throttle, from_=1000, to=2000, orient=tk.HORIZONTAL, command=on_slider_change)
+kp_slider = tk.Scale(sliders_frame, variable=kp, from_=0, to=30, orient=tk.HORIZONTAL, command=on_slider_change)
+ki_slider = tk.Scale(sliders_frame, variable=ki, from_=0, to=30, orient=tk.HORIZONTAL, command=on_slider_change)
+kd_slider = tk.Scale(sliders_frame, variable=kd, from_=0, to=30, orient=tk.HORIZONTAL, command=on_slider_change)
+kp_outerloop_slider = tk.Scale(sliders_frame, variable=kp_outerloop, from_=0, to=30, orient=tk.HORIZONTAL, command=on_slider_change)
 
 # Create arrow buttons for control
 up_button = ttk.Button(direction_buttons_frame, text="Up")
@@ -110,8 +125,6 @@ kp_slider.grid(row=1, column=1, padx=10, pady=5)
 ki_slider.grid(row=2, column=1, padx=10, pady=5)
 kd_slider.grid(row=3, column=1, padx=10, pady=5)
 kp_outerloop_slider.grid(row=4, column=1, padx=10, pady=5)
-
-update_button.pack(side=tk.LEFT, padx=10)
 
 up_button.grid(row=0, column=1, padx=10, pady=5)
 down_button.grid(row=2, column=1, padx=10, pady=5)
@@ -140,11 +153,5 @@ app.bind("<Down>", on_key_press)
 app.bind("<Right>", on_key_press)
 app.bind("<Left>", on_key_press)
 
-# Update parameters when there is any change
-throttle.trace("w", lambda *args: update_parameters())
-kp.trace("w", lambda *args: update_parameters())
-ki.trace("w", lambda *args: update_parameters())
-kd.trace("w", lambda *args: update_parameters())
-kp_outerloop.trace("w", lambda *args: update_parameters())
 
 app.mainloop()

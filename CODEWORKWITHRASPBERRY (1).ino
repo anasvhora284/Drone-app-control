@@ -113,8 +113,6 @@ void gyro_signals(void) {
   // Apply complementary filter to combine accelerometer and gyro data
   CompAngleRoll = 0.8 * (CompAngleRoll + RateRoll * dt) + 0.2 * AngleRoll;
   CompAnglePitch = 0.8 * (CompAnglePitch + RatePitch * dt) + 0.2 * AnglePitch;
-  
-  
 }
 
 void handlePing() {
